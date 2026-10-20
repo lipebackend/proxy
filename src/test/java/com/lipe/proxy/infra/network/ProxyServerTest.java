@@ -1,5 +1,7 @@
 package com.lipe.proxy.infra.network;
 
+import com.lipe.proxy.infra.tcp.TcpRequestHandler;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -18,7 +20,7 @@ class ProxyServerTest {
   void authenticationLeavesFollowingBytesUntouched() throws Exception {
     InputStream input = new ByteArrayInputStream(
         "AUTH lipe senha\r\npayload".getBytes(StandardCharsets.UTF_8));
-    Method readLine = ProxyServer.class.getDeclaredMethod("readAuthLine", InputStream.class);
+    Method readLine = TcpRequestHandler.class.getDeclaredMethod("readAuthLine", InputStream.class);
     readLine.setAccessible(true);
 
     assertThat(readLine.invoke(null, input)).isEqualTo("AUTH lipe senha");
@@ -28,7 +30,7 @@ class ProxyServerTest {
   @Test
   @Timeout(10)
   void forwardsBothWaysAndAllowsResponseAfterClientEof() throws Exception {
-    Method forward = ProxyServer.class.getDeclaredMethod("forward", Socket.class, Socket.class);
+    Method forward = TcpRequestHandler.class.getDeclaredMethod("forward", Socket.class, Socket.class);
     forward.setAccessible(true);
     try (ServerSocket clientListener = new ServerSocket(0, 1, InetAddress.getLoopbackAddress());
          ServerSocket destinationListener = new ServerSocket(0, 1, InetAddress.getLoopbackAddress());
