@@ -1,23 +1,22 @@
 package com.lipe.proxy;
 
-
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.logging.Logger;
+import com.lipe.proxy.infra.network.ProxyServer;
+import com.lipe.proxy.security.Auth;
+import com.lipe.proxy.security.RateLimiter;
 
 public class Main {
-    private static final Logger logger = Logger.getLogger(Main.class.getName());
+    public static void main(String[] args) {
+        int listenPort = 25565;
+        int maxConnectionsPerIp = 5;
 
+        RateLimiter rateLimiter = new RateLimiter(maxConnectionsPerIp);
 
-    public static void main(String[] args) throws Exception {
+        Auth auth = new Auth();
 
-        try {
-            ServerSocket serverSocket = new ServerSocket(port)){
-                while (true) {
-                    Socket socket = serverSocket.accept();
-                    Thread.startVirtualThread(() -> handleClient(clientSocket)) ~
-                }
-            }
-        }
+        auth.registerUser("lipe", "123456");
+
+        ProxyServer proxyServer = new ProxyServer(listenPort, rateLimiter, auth);
+
+        proxyServer.start();
     }
 }
